@@ -1,6 +1,7 @@
 // app/api/summarize/route.ts
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { getTranscriptFromUrl } from '../../lib/getTranscript';
 
 // Configure OpenRouter via OpenAI-compatible SDK
 const openai = new OpenAI({
@@ -32,23 +33,12 @@ export async function POST(req: Request) {
     const trimmedTranscript = (transcript ?? '').trim();
     const trimmedUrl = (youtubeUrl ?? '').trim();
 
-    const hasTranscript = trimmedTranscript.length > 0;
+    const hasManualTranscript = trimmedTranscript.length > 0;
     const hasUrl = trimmedUrl.length > 0;
 
-    if (!hasTranscript && !hasUrl) {
+    if (!hasManualTranscript && !hasUrl) {
       return NextResponse.json(
         { error: 'Either transcript or youtubeUrl is required.' },
-        { status: 400 }
-      );
-    }
-
-    if (!hasTranscript) {
-      // For now we only support dev transcript mode
-      return NextResponse.json(
-        {
-          error:
-            'Transcript mode only for now. Paste the raw transcript in the dev field.',
-        },
         { status: 400 }
       );
     }
@@ -58,6 +48,17 @@ export async function POST(req: Request) {
         { error: 'OPENROUTER_API_KEY is not configured on the server.' },
         { status: 500 }
       );
+    }
+
+    // Quest 7: decide which transcript to use
+    // If user pasted one, use that. Otherwise, fetch (fake) transcript from URL.
+    let effectiveTranscript: string;
+
+    if (hasManualTranscript) {
+      effectiveTranscript = trimmedTranscript;
+    } else {
+      // No manual transcript, but we have a URL → call the stub fetcher
+      effectiveTranscript = await getTranscriptFromUrl(trimmedUrl);
     }
 
     const systemPrompt = `
@@ -102,11 +103,11 @@ Your task is to read it carefully and output an immersive, narrative-style summa
 
 Here is the transcript:
 
-"""${trimmedTranscript}"""
+"""${effectiveTranscript}"""
 `.trim();
 
     const completion = await openai.chat.completions.create({
-      // Use any OpenRouter model you like; this is your current choice
+      // Use any OpenRouter model you like
       model: 'x-ai/grok-4.1-fast:free',
       messages: [
         { role: 'system', content: systemPrompt },
@@ -142,7 +143,7 @@ Here is the transcript:
           sections: [fallbackSection],
           meta: {
             usedTranscript: true,
-            usedYoutubeUrl: false,
+            usedYoutubeUrl: !hasManualTranscript && hasUrl,
             parseFallback: true,
           },
         },
@@ -179,7 +180,7 @@ Here is the transcript:
         sections,
         meta: {
           usedTranscript: true,
-          usedYoutubeUrl: !hasTranscript && hasUrl,
+          usedYoutubeUrl: !hasManualTranscript && hasUrl,
           parseFallback: false,
         },
       },
