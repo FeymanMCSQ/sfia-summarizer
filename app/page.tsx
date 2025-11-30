@@ -41,18 +41,33 @@ export default function Home() {
         transcript: trimmedTranscript || null,
       });
 
-      setSummary(data.summary ?? '');
-      setSections(data.sections ?? null);
+      // No transcript available / fetch failed
+      if (data.status === 'no-transcript') {
+        setError(
+          data.error ??
+            "I couldn't find captions for this video or couldn't fetch them. Try another video or paste the transcript manually."
+        );
+        return;
+      }
+
+      // Generic API error
+      if (data.status === 'error' && !data.summary) {
+        setError(data.error ?? 'Something went wrong, try again.');
+        return;
+      }
+
+      const nextSummary = data.summary ?? '';
+      const nextSections = (data.sections ?? null) as SummarySection[] | null;
+
+      setSummary(nextSummary);
+      setSections(nextSections);
 
       if (typeof data.meta?.usedTranscript === 'boolean') {
         setUsedTranscript(data.meta.usedTranscript);
       }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Something went wrong.');
-      } else {
-        setError('Something went wrong.');
-      }
+    } catch (err) {
+      console.error('Error calling /api/summarize:', err);
+      setError('Something went wrong, try again.');
     } finally {
       setLoading(false);
     }

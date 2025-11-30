@@ -16,12 +16,21 @@ export async function callSummarizeApi(
     body: JSON.stringify(input),
   });
 
-  if (!res.ok) {
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
-    const msg = data.error || 'Something went wrong.';
-    throw new Error(msg);
+  let data: SummarizeResponse;
+  try {
+    data = (await res.json()) as SummarizeResponse;
+  } catch {
+    data = {};
   }
 
-  const data = (await res.json()) as SummarizeResponse;
+  if (!res.ok) {
+    // HTTP-level error: normalize it into a structured error payload
+    return {
+      ...data,
+      status: data.status ?? 'error',
+      error: data.error ?? 'Something went wrong, try again.',
+    };
+  }
+
   return data;
 }
