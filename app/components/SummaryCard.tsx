@@ -171,6 +171,7 @@ const SECTION_ORDER = [
   'Constraints',
   'Core Mechanism',
   'Escalation & Consequences',
+  'Imagine',
   'New Normal',
   'Open Questions & Tensions',
   'Reflection Prompts',
