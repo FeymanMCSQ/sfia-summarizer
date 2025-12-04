@@ -50,7 +50,7 @@ Here is the full transcript of the episode. Produce the JSON summary exactly as 
 `.trim();
 
   const completion = await openai.chat.completions.create({
-    model: 'x-ai/grok-4.1-fast:free',
+    model: 'x-ai/grok-4.1-fast',
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
