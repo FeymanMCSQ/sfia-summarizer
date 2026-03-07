@@ -74,12 +74,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-slate-100">
+    <div className="min-h-screen text-text-primary">
       <main className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-10 sm:px-6 lg:px-8">
         <AppHeader />
 
         <section className="flex-1">
-          <div className="rounded-2xl bg-slate-900/80 p-5 shadow-xl shadow-black/40 ring-1 ring-slate-800 sm:p-6">
+          <div className="rounded-2xl bg-bg-card/80 p-5 shadow-xl shadow-black/40 ring-1 ring-border sm:p-6 backdrop-blur-sm">
             <UrlInputRow
               url={url}
               onUrlChange={setUrl}
@@ -102,7 +102,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="mt-6 text-xs text-slate-500">
+        <footer className="mt-6 text-xs text-text-muted">
           Built as a sandbox for transcript → narrative experiments. The real
           LLM pipeline will drop into the same API route.
         </footer>

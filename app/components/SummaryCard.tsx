@@ -1,156 +1,3 @@
-// // app/components/SummaryCard.tsx
-
-// import type { SummarySection } from '../helpers/types';
-
-// type SummaryCardProps = {
-//   loading: boolean;
-//   error: string | null;
-//   summary: string;
-//   sections: SummarySection[] | null;
-//   usedTranscript: boolean | null;
-// };
-
-// const SECTION_ORDER = [
-//   'Hook',
-//   'Constraints',
-//   'Core Mechanism',
-//   'Escalation & Consequences',
-//   'New Normal',
-//   'Open Questions & Tensions',
-//   'Reflection Prompts',
-// ];
-
-// function getSectionLabel(index: number, title: string) {
-//   const n = index + 1;
-//   return `${n}. ${title}`;
-// }
-
-// function renderReflectionPrompts(raw: string) {
-//   // Try to split into prompts:
-//   // handles content like:
-//   // "If ...?\n• Would you ...?\n• How might ...?"
-//   const lines = raw
-//     .split('\n')
-//     .map((l) => l.trim())
-//     .filter(Boolean);
-
-//   const prompts = lines
-//     .flatMap((line) =>
-//       line
-//         .split('•')
-//         .map((part) => part.trim())
-//         .filter(Boolean)
-//     )
-//     .filter(Boolean);
-
-//   if (prompts.length === 0) {
-//     return <p className="text-sm leading-relaxed text-slate-100">{raw}</p>;
-//   }
-
-//   return (
-//     <ul className="ml-4 list-disc space-y-1 text-sm leading-relaxed text-slate-100">
-//       {prompts.map((p, idx) => (
-//         <li key={idx}>{p}</li>
-//       ))}
-//     </ul>
-//   );
-// }
-
-// export function SummaryCard({
-//   loading,
-//   error,
-//   summary,
-//   sections,
-//   usedTranscript,
-// }: SummaryCardProps) {
-//   const hasSections = !!sections && sections.length > 0;
-
-//   return (
-//     <>
-//       {/* Error */}
-//       {error && (
-//         <div className="mt-4 rounded-lg border border-red-900/70 bg-red-950/60 px-3 py-2 text-sm text-red-200">
-//           {error}
-//         </div>
-//       )}
-
-//       <div className="mt-6 border-t border-slate-800 pt-4">
-//         <div className="mb-3 flex items-center justify-between gap-2">
-//           <h2 className="text-lg font-semibold text-slate-50">Summary</h2>
-
-//           {summary && (
-//             <span className="rounded-full bg-slate-800/80 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-slate-300 ring-1 ring-slate-700">
-//               {usedTranscript ? 'Dev transcript mode' : 'URL / default mode'}
-//             </span>
-//           )}
-//         </div>
-
-//         {/* Loading state */}
-//         {loading && (
-//           <div className="rounded-xl bg-slate-950/70 p-4 text-sm text-slate-200 ring-1 ring-slate-800/80">
-//             <p className="mb-1 font-medium text-slate-100">
-//               Summarizing… this might take a few seconds.
-//             </p>
-//             <p className="text-slate-400">
-//               We&apos;re reading the full transcript and building a structured
-//               briefing with seven sections.
-//             </p>
-//           </div>
-//         )}
-
-//         {/* Empty state */}
-//         {!loading && !summary && !error && (
-//           <div className="rounded-xl bg-slate-950/70 p-4 text-sm text-slate-400 ring-1 ring-slate-800/80">
-//             The structured summary will appear here after you click{' '}
-//             <span className="font-medium text-slate-200">Summarize</span>.
-//           </div>
-//         )}
-
-//         {/* Main content */}
-//         {!loading && summary && (
-//           <div className="space-y-4">
-//             {/* If we have structured sections, show them nicely.
-//                 Otherwise, fall back to a single readable block. */}
-//             {hasSections ? (
-//               <div className="space-y-4">
-//                 {sections!
-//                   .slice()
-//                   .sort(
-//                     (a, b) =>
-//                       SECTION_ORDER.indexOf(a.title) -
-//                       SECTION_ORDER.indexOf(b.title)
-//                   )
-//                   .map((section, index) => (
-//                     <section
-//                       key={section.title}
-//                       className="rounded-xl bg-slate-950/70 p-4 ring-1 ring-slate-800/80"
-//                     >
-//                       <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-emerald-300">
-//                         {getSectionLabel(index, section.title)}
-//                       </h3>
-
-//                       <div className="max-w-3xl text-sm leading-relaxed text-slate-100">
-//                         {section.title === 'Reflection Prompts'
-//                           ? renderReflectionPrompts(section.content)
-//                           : section.content}
-//                       </div>
-//                     </section>
-//                   ))}
-//               </div>
-//             ) : (
-//               // Fallback: single block (when JSON parsing failed and
-//               // everything came back as one big string, like your example).
-//               <div className="rounded-xl bg-slate-950/70 p-4 text-sm leading-relaxed text-slate-100 ring-1 ring-slate-800/80 max-w-3xl">
-//                 {summary}
-//               </div>
-//             )}
-//           </div>
-//         )}
-//       </div>
-//     </>
-//   );
-// }
-
 // app/components/SummaryCard.tsx
 
 'use client';
@@ -223,6 +70,7 @@ export function SummaryCard({
     reflectionPrompts.map(() => '')
   );
   const [notesSaved, setNotesSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleNoteChange = (index: number, value: string) => {
     setReflectionNotes((prev) => {
@@ -237,21 +85,86 @@ export function SummaryCard({
     setNotesSaved(true);
   };
 
+  const handleCopy = async () => {
+    if (!sections || sections.length === 0) {
+      if (summary) {
+        await navigator.clipboard.writeText(summary);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      return;
+    }
+
+    const sorted = sections
+      .slice()
+      .sort(
+        (a, b) =>
+          SECTION_ORDER.indexOf(a.title) - SECTION_ORDER.indexOf(b.title)
+      );
+
+    const text = sorted
+      .map((s, i) => {
+        const label = `${i + 1}. ${s.title.toUpperCase()}`;
+        if (s.title === 'Reflection Prompts') {
+          const prompts = extractReflectionPrompts(s.content);
+          return `${label}\n${prompts.map((p) => `• ${p}`).join('\n')}`;
+        }
+        return `${label}\n${s.content}`;
+      })
+      .join('\n\n');
+
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <>
       {/* Error */}
       {error && (
-        <div className="mt-4 rounded-lg border border-red-900/70 bg-red-950/60 px-3 py-2 text-sm text-red-200">
+        <div className="mt-4 rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-sm text-error animate-fade-up">
           {error}
         </div>
       )}
 
-      <div className="mt-6 border-t border-slate-800 pt-4">
+      <div className="mt-6 border-t border-border pt-4">
         <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold text-slate-50">Summary</h2>
+          <div className="flex items-center gap-3">
+            <h2
+              className="text-lg font-semibold text-text-primary"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              Summary
+            </h2>
+
+            {summary && (
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-[11px] font-medium text-text-secondary transition-all duration-200 hover:border-accent hover:text-accent"
+              >
+                {copied ? (
+                  <>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    Copy
+                  </>
+                )}
+              </button>
+            )}
+          </div>
 
           {summary && (
-            <span className="rounded-full bg-slate-800/80 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-slate-300 ring-1 ring-slate-700">
+            <span className="rounded-full bg-bg-card px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-accent ring-1 ring-border-accent">
               {usedTranscript ? 'Dev transcript mode' : 'URL / default mode'}
             </span>
           )}
@@ -259,22 +172,25 @@ export function SummaryCard({
 
         {/* Loading state */}
         {loading && (
-          <div className="rounded-xl bg-slate-950/70 p-4 text-sm text-slate-200 ring-1 ring-slate-800/80">
-            <p className="mb-1 font-medium text-slate-100">
-              Summarizing… this might take a few seconds.
-            </p>
-            <p className="text-slate-400">
-              We&apos;re reading the full transcript and building a structured
-              briefing with seven sections.
+          <div className="rounded-xl bg-bg-card p-5 text-sm text-text-secondary ring-1 ring-border-accent animate-fade-up">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="orbital-spinner" />
+              <p className="font-medium text-text-primary">
+                Summarizing… this might take a few seconds.
+              </p>
+            </div>
+            <p className="text-text-muted ml-9">
+              Reading the full transcript and building a structured
+              briefing with eight sections.
             </p>
           </div>
         )}
 
         {/* Empty state */}
         {!loading && !summary && !error && (
-          <div className="rounded-xl bg-slate-950/70 p-4 text-sm text-slate-400 ring-1 ring-slate-800/80">
+          <div className="rounded-xl bg-bg-card p-5 text-sm text-text-muted ring-1 ring-border">
             The structured summary will appear here after you click{' '}
-            <span className="font-medium text-slate-200">Summarize</span>.
+            <span className="font-medium text-accent">Summarize</span>.
           </div>
         )}
 
@@ -297,12 +213,12 @@ export function SummaryCard({
                       return (
                         <section
                           key={section.title}
-                          className="rounded-xl bg-slate-950/70 p-4 ring-1 ring-slate-800/80"
+                          className="section-card animate-fade-up rounded-xl bg-bg-card/80 p-4 ring-1 ring-border-accent backdrop-blur-sm transition-all duration-300 hover:ring-accent/40 hover:shadow-lg hover:shadow-accent/5"
                         >
-                          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-emerald-300">
+                          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-accent">
                             {getSectionLabel(index, section.title)}
                           </h3>
-                          <div className="max-w-3xl text-sm leading-relaxed text-slate-100">
+                          <div className="max-w-3xl text-sm leading-relaxed text-text-primary">
                             {section.content}
                           </div>
                         </section>
@@ -313,28 +229,28 @@ export function SummaryCard({
                     return (
                       <section
                         key={section.title}
-                        className="rounded-xl bg-slate-950/70 p-4 ring-1 ring-slate-800/80"
+                        className="section-card animate-fade-up rounded-xl bg-bg-card/80 p-4 ring-1 ring-border-accent backdrop-blur-sm"
                       >
-                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-emerald-300">
+                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-accent">
                           {getSectionLabel(index, section.title)}
                         </h3>
 
-                        <p className="mb-3 text-xs text-slate-400">
+                        <p className="mb-3 text-xs text-text-muted">
                           These questions are for you to explore the idea, not
-                          to “get right”.
+                          to &ldquo;get right&rdquo;.
                         </p>
 
                         <div className="space-y-4 max-w-3xl">
                           {reflectionPrompts.map((prompt, idx) => (
                             <div
                               key={idx}
-                              className="rounded-lg bg-slate-900/80 p-3 ring-1 ring-slate-800"
+                              className="rounded-lg bg-bg-input p-3 ring-1 ring-border transition-all duration-200 hover:ring-border-accent"
                             >
-                              <p className="text-sm font-medium text-slate-100">
+                              <p className="text-sm font-medium text-text-primary">
                                 {prompt}
                               </p>
                               <textarea
-                                className="mt-2 w-full rounded-md border border-slate-700 bg-slate-950/80 px-2 py-1 text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                                className="mt-2 w-full rounded-md border border-border bg-bg-void px-2 py-1 text-xs text-text-primary placeholder:text-text-muted transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
                                 rows={3}
                                 placeholder="Type your thoughts here..."
                                 value={reflectionNotes[idx] ?? ''}
@@ -351,12 +267,12 @@ export function SummaryCard({
                             <button
                               type="button"
                               onClick={handleSaveNotes}
-                              className="inline-flex items-center rounded-md bg-emerald-500 px-3 py-1.5 text-xs font-medium text-emerald-950 shadow-md shadow-emerald-500/30 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-500/40"
+                              className="inline-flex items-center rounded-md border border-accent bg-transparent px-3 py-1.5 text-xs font-medium text-accent transition-all duration-200 hover:bg-accent hover:text-black hover:shadow-md hover:shadow-accent/20"
                             >
                               Save My Notes
                             </button>
                             {notesSaved && (
-                              <span className="text-[11px] text-slate-400">
+                              <span className="text-[11px] text-text-muted">
                                 Notes saved locally for this summary.
                               </span>
                             )}
@@ -368,7 +284,7 @@ export function SummaryCard({
               </div>
             ) : (
               // Fallback: single block if sections are unavailable
-              <div className="max-w-3xl rounded-xl bg-slate-950/70 p-4 text-sm leading-relaxed text-slate-100 ring-1 ring-slate-800/80">
+              <div className="max-w-3xl rounded-xl bg-bg-card/80 p-4 text-sm leading-relaxed text-text-primary ring-1 ring-border-accent backdrop-blur-sm animate-fade-up">
                 {summary}
               </div>
             )}

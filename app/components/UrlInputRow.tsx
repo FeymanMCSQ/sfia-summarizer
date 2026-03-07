@@ -18,7 +18,7 @@ export function UrlInputRow({
       <div className="flex-1">
         <label
           htmlFor="youtube-url"
-          className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-300"
+          className="mb-1 block text-xs font-medium uppercase tracking-wide text-text-secondary"
         >
           YouTube URL
         </label>
@@ -28,9 +28,9 @@ export function UrlInputRow({
           placeholder="https://www.youtube.com/watch?v=..."
           value={url}
           onChange={(e) => onUrlChange(e.target.value)}
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 shadow-sm focus:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+          className="w-full rounded-lg border border-border bg-bg-input px-3 py-2 text-sm text-text-primary placeholder:text-text-muted shadow-sm transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
         />
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-text-muted">
           For production, this will fetch captions. For now, you can also use
           dev transcript mode below.
         </p>
@@ -39,11 +39,11 @@ export function UrlInputRow({
       <button
         onClick={onSummarize}
         disabled={loading}
-        className="mt-1 inline-flex items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-emerald-950 shadow-md shadow-emerald-500/30 transition hover:bg-emerald-400 hover:shadow-lg hover:shadow-emerald-500/40 disabled:cursor-not-allowed disabled:bg-emerald-700/70 disabled:text-emerald-100 sm:mt-6"
+        className="mt-1 inline-flex items-center justify-center rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-black shadow-md shadow-accent/20 transition-all duration-200 hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/30 disabled:cursor-not-allowed disabled:bg-accent/40 disabled:text-black/50 sm:mt-6"
       >
         {loading ? (
           <span className="inline-flex items-center gap-2">
-            <span className="h-3 w-3 animate-spin rounded-full border-2 border-emerald-900 border-t-transparent" />
+            <span className="orbital-spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
             Summarizing…
           </span>
         ) : (
