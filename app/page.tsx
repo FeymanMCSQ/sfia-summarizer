@@ -41,7 +41,6 @@ export default function Home() {
         transcript: trimmedTranscript || null,
       });
 
-      // No transcript available / fetch failed
       if (data.status === 'no-transcript') {
         setError(
           data.error ??
@@ -50,7 +49,6 @@ export default function Home() {
         return;
       }
 
-      // Generic API error
       if (data.status === 'error' && !data.summary) {
         setError(data.error ?? 'Something went wrong, try again.');
         return;
@@ -74,12 +72,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-text-primary">
+    <div className="min-h-screen bg-bg-page text-text-primary">
       <main className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-10 sm:px-6 lg:px-8">
         <AppHeader />
 
         <section className="flex-1">
-          <div className="rounded-2xl bg-bg-card/80 p-5 shadow-xl shadow-black/40 ring-1 ring-border sm:p-6 backdrop-blur-sm">
+          <div className="rounded-2xl border border-border bg-bg-card p-5 shadow-sm sm:p-6">
             <UrlInputRow
               url={url}
               onUrlChange={setUrl}

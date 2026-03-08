@@ -28,12 +28,11 @@ export function DevTranscriptPanel({
     };
     reader.readAsText(file);
 
-    // Reset so the same file can be re-selected
     e.target.value = '';
   };
 
   return (
-    <details className="mt-4 rounded-lg border border-dashed border-border-accent bg-accent-muted/30 p-3 text-sm text-text-secondary">
+    <details className="mt-4 rounded-lg border border-dashed border-accent/30 bg-accent-light/50 p-3 text-sm text-text-secondary">
       <summary className="cursor-pointer select-none text-xs font-semibold uppercase tracking-wide text-accent">
         Dev: Paste or Upload Transcript (optional)
       </summary>
@@ -50,7 +49,7 @@ export function DevTranscriptPanel({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="inline-flex items-center gap-2 rounded-md border border-border-accent bg-bg-input px-3 py-1.5 text-xs font-medium text-accent transition-all duration-200 hover:bg-accent hover:text-black"
+          className="inline-flex items-center gap-2 rounded-md border border-accent/30 bg-white px-3 py-1.5 text-xs font-medium text-accent transition-all duration-200 hover:bg-accent hover:text-white"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -74,7 +73,7 @@ export function DevTranscriptPanel({
       </div>
 
       <textarea
-        className="mt-3 h-40 w-full resize-y rounded-lg border border-border bg-bg-input px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+        className="mt-3 h-40 w-full resize-y rounded-lg border border-border bg-white px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
         placeholder="Paste full transcript text here..."
         value={transcript}
         onChange={(e) => onTranscriptChange(e.target.value)}

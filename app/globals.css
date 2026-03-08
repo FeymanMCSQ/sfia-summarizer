@@ -1,30 +1,30 @@
 @import 'tailwindcss';
 
 :root {
-  /* SFIA brand palette */
-  --bg-void: #000000;
-  --bg-card: #0D0D0D;
-  --bg-input: #111111;
+  /* SFIA light palette — white + orange */
+  --bg-page: #FFFFFF;
+  --bg-card: #F9F9FB;
+  --bg-input: #FFFFFF;
   --accent: #E8871E;
-  --accent-hover: #F5A623;
-  --accent-glow: rgba(232, 135, 30, 0.15);
-  --accent-muted: rgba(232, 135, 30, 0.08);
-  --text-primary: #FFFFFF;
-  --text-secondary: #999999;
-  --text-muted: #555555;
-  --border: #1A1A1A;
-  --border-accent: rgba(232, 135, 30, 0.2);
-  --error: #E05252;
+  --accent-hover: #D47812;
+  --accent-light: #FFF4E8;
+  --accent-glow: rgba(232, 135, 30, 0.1);
+  --text-primary: #1A1A1A;
+  --text-secondary: #555555;
+  --text-muted: #999999;
+  --border: #E5E5E5;
+  --border-accent: rgba(232, 135, 30, 0.3);
+  --error: #D93025;
 }
 
 @theme inline {
-  --color-bg-void: var(--bg-void);
+  --color-bg-page: var(--bg-page);
   --color-bg-card: var(--bg-card);
   --color-bg-input: var(--bg-input);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
   --color-accent-glow: var(--accent-glow);
-  --color-accent-muted: var(--accent-muted);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
@@ -37,31 +37,11 @@
 
 /* ───── Base ───── */
 body {
-  background: var(--bg-void);
+  background: var(--bg-page);
   color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* ───── Subtle starfield background ───── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.12) 0%, transparent 100%),
-    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.08) 0%, transparent 100%),
-    radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 100%),
-    radial-gradient(1px 1px at 60% 50%, rgba(255,255,255,0.06) 0%, transparent 100%),
-    radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 100%),
-    radial-gradient(1px 1px at 50% 30%, rgba(255,255,255,0.08) 0%, transparent 100%),
-    radial-gradient(1px 1px at 15% 90%, rgba(255,255,255,0.07) 0%, transparent 100%),
-    radial-gradient(1px 1px at 70% 65%, rgba(255,255,255,0.09) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 25% 45%, rgba(232,135,30,0.1) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 75% 35%, rgba(232,135,30,0.08) 0%, transparent 100%);
-  pointer-events: none;
 }
 
 /* ───── Animations ───── */
@@ -83,19 +63,10 @@ body::before {
 
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(232, 135, 30, 0.2);
+    box-shadow: 0 0 6px rgba(232, 135, 30, 0.3);
   }
   50% {
-    box-shadow: 0 0 20px rgba(232, 135, 30, 0.4);
-  }
-}
-
-@keyframes border-glow {
-  0%, 100% {
-    border-color: rgba(232, 135, 30, 0.15);
-  }
-  50% {
-    border-color: rgba(232, 135, 30, 0.35);
+    box-shadow: 0 0 14px rgba(232, 135, 30, 0.6);
   }
 }
 
@@ -126,7 +97,7 @@ body::before {
 .orbital-spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid rgba(232, 135, 30, 0.2);
+  border: 2.5px solid rgba(232, 135, 30, 0.2);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: orbital-spin 0.9s linear infinite;
@@ -137,7 +108,7 @@ body::before {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-void);
+  background: var(--bg-page);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);

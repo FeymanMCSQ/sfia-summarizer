@@ -56,7 +56,6 @@ export function SummaryCard({
 }: SummaryCardProps) {
   const hasSections = !!sections && sections.length > 0;
 
-  // Locate the Reflection Prompts section (if any)
   const reflectionSection = sections?.find(
     (s) => s.title === 'Reflection Prompts'
   );
@@ -65,7 +64,6 @@ export function SummaryCard({
     ? extractReflectionPrompts(reflectionSection.content)
     : [];
 
-  // Notes per prompt (local state only), initialized once per mount.
   const [reflectionNotes, setReflectionNotes] = useState<string[]>(() =>
     reflectionPrompts.map(() => '')
   );
@@ -122,7 +120,7 @@ export function SummaryCard({
     <>
       {/* Error */}
       {error && (
-        <div className="mt-4 rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-sm text-error animate-fade-up">
+        <div className="mt-4 rounded-lg border border-error/30 bg-red-50 px-3 py-2 text-sm text-error animate-fade-up">
           {error}
         </div>
       )}
@@ -141,7 +139,7 @@ export function SummaryCard({
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-[11px] font-medium text-text-secondary transition-all duration-200 hover:border-accent hover:text-accent"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1 text-[11px] font-medium text-text-muted transition-all duration-200 hover:border-accent hover:text-accent"
               >
                 {copied ? (
                   <>
@@ -164,7 +162,7 @@ export function SummaryCard({
           </div>
 
           {summary && (
-            <span className="rounded-full bg-bg-card px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-accent ring-1 ring-border-accent">
+            <span className="rounded-full bg-accent-light px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-accent ring-1 ring-accent/20">
               {usedTranscript ? 'Dev transcript mode' : 'URL / default mode'}
             </span>
           )}
@@ -172,7 +170,7 @@ export function SummaryCard({
 
         {/* Loading state */}
         {loading && (
-          <div className="rounded-xl bg-bg-card p-5 text-sm text-text-secondary ring-1 ring-border-accent animate-fade-up">
+          <div className="rounded-xl border border-accent/20 bg-accent-light p-5 text-sm text-text-secondary animate-fade-up">
             <div className="flex items-center gap-3 mb-2">
               <div className="orbital-spinner" />
               <p className="font-medium text-text-primary">
@@ -188,7 +186,7 @@ export function SummaryCard({
 
         {/* Empty state */}
         {!loading && !summary && !error && (
-          <div className="rounded-xl bg-bg-card p-5 text-sm text-text-muted ring-1 ring-border">
+          <div className="rounded-xl border border-border bg-bg-card p-5 text-sm text-text-muted">
             The structured summary will appear here after you click{' '}
             <span className="font-medium text-accent">Summarize</span>.
           </div>
@@ -213,7 +211,7 @@ export function SummaryCard({
                       return (
                         <section
                           key={section.title}
-                          className="section-card animate-fade-up rounded-xl bg-bg-card/80 p-4 ring-1 ring-border-accent backdrop-blur-sm transition-all duration-300 hover:ring-accent/40 hover:shadow-lg hover:shadow-accent/5"
+                          className="section-card animate-fade-up rounded-xl border border-border bg-white p-4 shadow-sm transition-all duration-300 hover:border-accent/30 hover:shadow-md hover:shadow-accent/5"
                         >
                           <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-accent">
                             {getSectionLabel(index, section.title)}
@@ -225,11 +223,10 @@ export function SummaryCard({
                       );
                     }
 
-                    // Reflection prompts section
                     return (
                       <section
                         key={section.title}
-                        className="section-card animate-fade-up rounded-xl bg-bg-card/80 p-4 ring-1 ring-border-accent backdrop-blur-sm"
+                        className="section-card animate-fade-up rounded-xl border border-border bg-white p-4 shadow-sm"
                       >
                         <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-accent">
                           {getSectionLabel(index, section.title)}
@@ -244,13 +241,13 @@ export function SummaryCard({
                           {reflectionPrompts.map((prompt, idx) => (
                             <div
                               key={idx}
-                              className="rounded-lg bg-bg-input p-3 ring-1 ring-border transition-all duration-200 hover:ring-border-accent"
+                              className="rounded-lg border border-border bg-bg-card p-3 transition-all duration-200 hover:border-accent/30"
                             >
                               <p className="text-sm font-medium text-text-primary">
                                 {prompt}
                               </p>
                               <textarea
-                                className="mt-2 w-full rounded-md border border-border bg-bg-void px-2 py-1 text-xs text-text-primary placeholder:text-text-muted transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                                className="mt-2 w-full rounded-md border border-border bg-white px-2 py-1 text-xs text-text-primary placeholder:text-text-muted transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
                                 rows={3}
                                 placeholder="Type your thoughts here..."
                                 value={reflectionNotes[idx] ?? ''}
@@ -267,7 +264,7 @@ export function SummaryCard({
                             <button
                               type="button"
                               onClick={handleSaveNotes}
-                              className="inline-flex items-center rounded-md border border-accent bg-transparent px-3 py-1.5 text-xs font-medium text-accent transition-all duration-200 hover:bg-accent hover:text-black hover:shadow-md hover:shadow-accent/20"
+                              className="inline-flex items-center rounded-md border border-accent bg-transparent px-3 py-1.5 text-xs font-medium text-accent transition-all duration-200 hover:bg-accent hover:text-white hover:shadow-md hover:shadow-accent/20"
                             >
                               Save My Notes
                             </button>
@@ -283,8 +280,7 @@ export function SummaryCard({
                   })}
               </div>
             ) : (
-              // Fallback: single block if sections are unavailable
-              <div className="max-w-3xl rounded-xl bg-bg-card/80 p-4 text-sm leading-relaxed text-text-primary ring-1 ring-border-accent backdrop-blur-sm animate-fade-up">
+              <div className="max-w-3xl rounded-xl border border-border bg-white p-4 text-sm leading-relaxed text-text-primary shadow-sm animate-fade-up">
                 {summary}
               </div>
             )}

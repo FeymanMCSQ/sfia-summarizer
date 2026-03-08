@@ -11,9 +11,9 @@ export function AppHeader() {
           alt="SFIA Logo"
           width={44}
           height={44}
-          className="rounded-full"
+          className="rounded-full ring-2 ring-accent/20"
         />
-        <div className="inline-flex items-center gap-2 rounded-full bg-bg-card px-3 py-1 text-xs font-medium text-accent ring-1 ring-border-accent">
+        <div className="inline-flex items-center gap-2 rounded-full bg-accent-light px-3 py-1 text-xs font-medium text-accent ring-1 ring-accent/20">
           <span className="inline-block h-2 w-2 rounded-full bg-accent animate-glow-pulse" />
           SFIA Immersive Summarizer
         </div>
