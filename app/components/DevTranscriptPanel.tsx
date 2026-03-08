@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 
 type DevTranscriptPanelProps = {
   transcript: string;
@@ -14,6 +14,21 @@ export function DevTranscriptPanel({
   onTranscriptChange,
 }: DevTranscriptPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoGrow = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    const maxHeight = 400;
+    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+    el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onTranscriptChange(e.target.value);
+    autoGrow();
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -24,6 +39,8 @@ export function DevTranscriptPanel({
       const text = event.target?.result;
       if (typeof text === 'string') {
         onTranscriptChange(text);
+        // Auto-grow after file load
+        requestAnimationFrame(() => autoGrow());
       }
     };
     reader.readAsText(file);
@@ -73,10 +90,11 @@ export function DevTranscriptPanel({
       </div>
 
       <textarea
-        className="mt-3 h-40 w-full resize-y rounded-lg border border-border bg-white px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+        ref={textareaRef}
+        className="mt-3 min-h-[100px] w-full resize-none rounded-lg border border-border bg-white px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-muted transition-all duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
         placeholder="Paste full transcript text here..."
         value={transcript}
-        onChange={(e) => onTranscriptChange(e.target.value)}
+        onChange={handleChange}
       />
     </details>
   );
