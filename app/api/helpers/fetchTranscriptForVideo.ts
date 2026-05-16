@@ -7,16 +7,9 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-type WorkerSuccessResponse = {
-  transcript: string;
-  length?: number;
-  errorCode?: null;
-};
-
-type WorkerErrorResponse = {
-  errorCode?: string;
-  message?: string;
-};
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
 
 export async function fetchTranscriptForVideo(
   youtubeUrl: string
@@ -54,27 +47,29 @@ export async function fetchTranscriptForVideo(
     }
 
     if (!resp.ok) {
-      const errObj =
-        data && typeof data === 'object' ? (data as WorkerErrorResponse) : {};
-      const code = errObj.errorCode ?? 'WORKER_ERROR';
-      const message = errObj.message ?? 'Transcript worker returned an error.';
+      const errObj = isRecord(data) ? data : {};
+      const code = isNonEmptyString(errObj.errorCode)
+        ? errObj.errorCode
+        : 'WORKER_ERROR';
+      const message = isNonEmptyString(errObj.message)
+        ? errObj.message
+        : 'Transcript worker returned an error.';
       console.error('[fetchTranscriptForVideo] Worker error:', { code, message, status: resp.status, data });
       throw new Error(`Transcript worker error [${code}]: ${message}`);
     }
 
-    console.log('[fetchTranscriptForVideo] Response data keys:', data && typeof data === 'object' ? Object.keys(data) : 'not an object');
-    console.log('[fetchTranscriptForVideo] Has transcript field?', data && typeof data === 'object' && 'transcript' in data);
+    const dataRecord = isRecord(data) ? data : null;
+    const transcriptValue = dataRecord?.transcript;
+
+    console.log('[fetchTranscriptForVideo] Response data keys:', dataRecord ? Object.keys(dataRecord) : 'not an object');
+    console.log('[fetchTranscriptForVideo] Has transcript field?', dataRecord ? 'transcript' in dataRecord : false);
     
-    if (
-      !data ||
-      typeof data !== 'object' ||
-      !isNonEmptyString((data as WorkerSuccessResponse).transcript)
-    ) {
+    if (!isNonEmptyString(transcriptValue)) {
       console.error('[fetchTranscriptForVideo] Invalid response structure:', {
-        isObject: typeof data === 'object',
-        hasTranscript: data && typeof data === 'object' && 'transcript' in data,
-        transcriptType: data && typeof data === 'object' && 'transcript' in data ? typeof (data as any).transcript : 'N/A',
-        transcriptValue: data && typeof data === 'object' && 'transcript' in data ? String((data as any).transcript).slice(0, 100) : 'N/A',
+        isObject: Boolean(dataRecord),
+        hasTranscript: dataRecord ? 'transcript' in dataRecord : false,
+        transcriptType: dataRecord && 'transcript' in dataRecord ? typeof transcriptValue : 'N/A',
+        transcriptValue: dataRecord && 'transcript' in dataRecord ? String(transcriptValue).slice(0, 100) : 'N/A',
         fullData: JSON.stringify(data).slice(0, 500)
       });
       throw new Error(
@@ -82,7 +77,7 @@ export async function fetchTranscriptForVideo(
       );
     }
 
-    const { transcript } = data as WorkerSuccessResponse;
+    const transcript = transcriptValue;
     console.log('[fetchTranscriptForVideo] Success! Transcript length:', transcript.length);
     return transcript;
   }

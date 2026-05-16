@@ -14,7 +14,7 @@ This app is a Next.js (App Router) UI that turns a YouTube video (or a manually 
   - `GET ${TRANSCRIPT_WORKER_URL}/api/transcript?url=<encoded>` if `TRANSCRIPT_WORKER_URL` is set.
 - Server -> OpenRouter LLM
   - `POST https://openrouter.ai/api/v1` via the OpenAI SDK.
-  - Model: `x-ai/grok-4.1-fast`.
+  - Model: `x-ai/grok-4.3`.
 - Server -> System binary (local fallback)
   - `yt-dlp` is executed to download auto subtitles if the worker is not configured.
 
